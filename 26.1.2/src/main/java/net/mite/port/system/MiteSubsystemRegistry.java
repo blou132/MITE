@@ -17,7 +17,7 @@ public final class MiteSubsystemRegistry {
 		registry.register(new LoggedStubSubsystem("mobs_ai", "stub: pending gameplay parity"));
 		registry.register(new LoggedStubSubsystem("blocks_items", "stub: pending gameplay parity"));
 		registry.register(new LoggedStubSubsystem("worldgen", "stub: pending gameplay parity"));
-		registry.register(new LoggedStubSubsystem("player_data", "stub: pending data migration"));
+		registry.register(new PlayerDataSubsystem());
 		registry.register(new LoggedStubSubsystem("generation_balance", "stub: pending balance migration"));
 
 		return registry;

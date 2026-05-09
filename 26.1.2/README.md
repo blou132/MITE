@@ -11,7 +11,10 @@ This module is a **bootstrap port target** for migrating legacy MITE 1.6.4 jar-m
   - Modern mod bootstrap and launch wiring
   - Subsystem isolation scaffolding for progressive migration
   - Hardcore-like defaults on server start (difficulty hard + locked, no natural regen, keepInventory=false)
-  - Hunger pressure baseline (periodic extra exhaustion for survival/adventure players)
+  - Persistent `player_data` store (world saved data) for per-player MITE state
+  - Hunger pressure baseline wired to persistent player data:
+    - periodic extra exhaustion for survival players
+    - persisted nutrition snapshot, MITE exhaustion counter, and tick progression
 
 ## Legacy source constraints
 

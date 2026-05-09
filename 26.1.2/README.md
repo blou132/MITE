@@ -10,7 +10,8 @@ This module is a **bootstrap port target** for migrating legacy MITE 1.6.4 jar-m
 - Scope migrated in this stage:
   - Modern mod bootstrap and launch wiring
   - Subsystem isolation scaffolding for progressive migration
-  - Server lifecycle and server tick hooks reserved for gameplay parity work
+  - Hardcore-like defaults on server start (difficulty hard + locked, no natural regen, keepInventory=false)
+  - Hunger pressure baseline (periodic extra exhaustion for survival/adventure players)
 
 ## Legacy source constraints
 
@@ -19,8 +20,8 @@ Because of this, migration proceeds incrementally with explicit subsystem stubs 
 
 ## Next migration increments
 
-1. Implement hardcore defaults and survival rules in `hardcore_difficulty`.
-2. Port hunger/nutrition and damage pipeline.
+1. Extend hardcore mode to full permadeath semantics and world-creation UX.
+2. Port nutrition depth (food quality, starvation tiers, penalties) and damage pipeline.
 3. Port recipes/progression and block/item registration.
 4. Port mobs/AI/worldgen with modern data-driven assets.
 5. Replace stubs with validated gameplay modules one by one.

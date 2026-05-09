@@ -1,0 +1,30 @@
+{
+	"schemaVersion": 1,
+	"id": "mite",
+	"version": "${version}",
+	"name": "MITE Legacy Port",
+	"description": "Incremental port of the legacy MITE jar-mod to Minecraft Java 26.1.2.",
+	"authors": [
+		"MITE Community"
+	],
+	"contact": {
+		"sources": "https://github.com/unknown/MITE"
+	},
+	"license": "All-Rights-Reserved",
+	"icon": "assets/mite/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.mite.port.MitePortMod"
+		],
+		"client": [
+			"net.mite.port.client.MitePortClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.2",
+		"minecraft": "~26.1.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

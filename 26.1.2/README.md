@@ -44,6 +44,43 @@ This module is a **bootstrap port target** for migrating legacy MITE 1.6.4 jar-m
   - world save checkpoint hook is active
   - server stopping forces a final data flush
 
+## Debug validation commands (dev/op)
+
+- `/mite debug playerdata` or `/mite debug dump`
+  - print current persisted player data + runtime food level + active scenario state
+- `/mite debug setnutrition <value>`
+  - updates persisted nutrition and current food level
+- `/mite debug setexhaustion <value>`
+  - updates persisted MITE exhaustion
+- `/mite debug setticks <value>`
+  - updates persisted nutrition tick accumulator
+- `/mite debug killtest`
+  - non-hardcore/dev kill test (forces immediate respawn + validates reset behavior)
+- `/mite debug killtest_hardcore`
+  - hardcore-style kill test (forces immediate respawn + validates strict preservation)
+- `/mite debug autotest start|status|stop`
+  - scripted 2-phase scenario: dev respawn validation then hardcore respawn validation
+- `/mite debug savenow`
+  - forces immediate `SavedData` flush
+
+These commands are restricted to local owner/op context and are intended only for migration validation.
+
+## Automated death/respawn smoke scenario
+
+- World name trigger: `MITE_DEATH_RESPAWN_TEST`
+- Or flag trigger: create `.mite_playerdata_autotest.flag` in the world root save folder
+- On player join in this world, the mod auto-starts a scripted scenario:
+  1. apply non-hardcore/dev rules, set test data, force real death, verify respawn reset policy;
+  2. apply hardcore-like rules, set test data, force real death, verify strict respawn preservation;
+  3. force save flush and emit pass/fail logs.
+- The scenario includes a server-side forced-respawn fallback (20 ticks) for environments where client respawn acknowledgement is delayed.
+- Validation accepts expected hunger-exhaustion progression between death and respawn, while still enforcing:
+  - non-hardcore/dev: tick accumulator reset to `0`;
+  - hardcore-like: no lifecycle reset of progression state.
+- Key proof logs:
+  - `MITE debug scenario DEV respawn PASS ...`
+  - `MITE debug scenario HARDCORE respawn PASS ...`
+
 ## Legacy source constraints
 
 The repository currently contains only compiled `.class` files from `MITE 1.6.4` and no source/build metadata for the legacy codebase.

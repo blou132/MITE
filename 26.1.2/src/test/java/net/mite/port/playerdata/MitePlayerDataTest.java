@@ -103,6 +103,24 @@ class MitePlayerDataTest {
 		Assertions.assertTrue(afterDeath.hardcoreRulesActive());
 	}
 
+	@Test
+	void respawnDataPersistsAcrossStoreSaveReload() {
+		UUID playerId = UUID.randomUUID();
+		MitePlayerData beforeDeath = new MitePlayerData(1, 10.0F, 1.0F, 22, false, true);
+		MitePlayerData afterRespawn = MitePlayerLifecyclePolicy.onRespawn(beforeDeath, false, true, false);
+
+		MitePlayerDataStore store = new MitePlayerDataStore();
+		store.put(playerId, afterRespawn);
+
+		JsonElement encoded = unwrap(MitePlayerDataStore.codec().encodeStart(JsonOps.INSTANCE, store));
+		MitePlayerDataStore reloaded = unwrap(MitePlayerDataStore.codec().parse(JsonOps.INSTANCE, encoded));
+		MitePlayerData persisted = reloaded.get(playerId);
+
+		Assertions.assertNotNull(persisted);
+		Assertions.assertEquals(afterRespawn, persisted);
+		Assertions.assertEquals(0, persisted.ticksSinceNutritionUpdate());
+	}
+
 	private static <T> T unwrap(DataResult<T> result) {
 		return result.result().orElseThrow(() -> new AssertionError("Codec operation failed"));
 	}

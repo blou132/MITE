@@ -2,8 +2,11 @@ package net.mite.port.system;
 
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.mite.port.MitePortMod;
 import net.mite.port.playerdata.MitePlayerData;
+import net.mite.port.playerdata.MitePlayerDataDebugCommands;
+import net.mite.port.playerdata.MitePlayerDataDebugScenario;
 import net.mite.port.playerdata.MitePlayerDataManager;
 import net.mite.port.playerdata.MitePlayerDataStore;
 import net.minecraft.server.MinecraftServer;
@@ -22,6 +25,8 @@ public final class PlayerDataSubsystem implements MiteSubsystem {
 
 	@Override
 	public void initialize() {
+		MitePlayerDataDebugCommands.register();
+
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
 			MitePlayerDataStore store = MitePlayerDataManager.store(server);
 			MitePortMod.LOGGER.info("MITE player_data loaded: trackedPlayers={}", store.playerCount());
@@ -60,6 +65,8 @@ public final class PlayerDataSubsystem implements MiteSubsystem {
 		ServerPlayerEvents.ALLOW_DEATH.register(PlayerDataSubsystem::onAllowDeath);
 		ServerPlayerEvents.COPY_FROM.register(PlayerDataSubsystem::onCopyFrom);
 		ServerPlayerEvents.AFTER_RESPAWN.register(PlayerDataSubsystem::onAfterRespawn);
+
+		ServerTickEvents.END_SERVER_TICK.register(MitePlayerDataDebugScenario::tick);
 	}
 
 	private static void onJoin(net.minecraft.server.MinecraftServer server, ServerPlayer player) {
@@ -83,6 +90,8 @@ public final class PlayerDataSubsystem implements MiteSubsystem {
 				data.ticksSinceNutritionUpdate()
 			);
 		}
+
+		MitePlayerDataDebugScenario.maybeStartAutoScenario(server, player);
 	}
 
 	private static void onLeave(net.minecraft.server.MinecraftServer server, ServerPlayer player) {
@@ -167,5 +176,7 @@ public final class PlayerDataSubsystem implements MiteSubsystem {
 			data.hardcoreRulesActive(),
 			data.survivalRulesActive()
 		);
+
+		MitePlayerDataDebugScenario.onAfterRespawn(server, oldPlayer, newPlayer, fromAlivePlayer);
 	}
 }

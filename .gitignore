@@ -1,0 +1,6 @@
+tools/
+*.zip
+*.tar.gz
+*.7z
+jdk-*/
+OpenJDK*/

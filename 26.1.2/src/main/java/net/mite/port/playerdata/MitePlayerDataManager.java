@@ -35,6 +35,36 @@ public final class MitePlayerDataManager {
 		return update(server, player, refreshed);
 	}
 
+	public static MitePlayerData applyDeathState(MinecraftServer server, ServerPlayer player) {
+		MitePlayerData current = getOrCreate(server, player);
+		MitePlayerData resolved = MitePlayerLifecyclePolicy.onFatalDamage(current, isHardcoreRulesActive(server));
+		return update(server, player, resolved);
+	}
+
+	public static MitePlayerData applyRespawnState(
+		MinecraftServer server,
+		ServerPlayer oldPlayer,
+		ServerPlayer newPlayer,
+		boolean fromAlivePlayer
+	) {
+		MitePlayerData previous = getOrCreate(server, oldPlayer);
+		MitePlayerData resolved = MitePlayerLifecyclePolicy.onRespawn(
+			previous,
+			isHardcoreRulesActive(server),
+			newPlayer.gameMode().isSurvival(),
+			fromAlivePlayer
+		);
+		return update(server, newPlayer, resolved);
+	}
+
+	public static void saveNow(MinecraftServer server) {
+		server.overworld().getDataStorage().saveAndJoin();
+	}
+
+	public static boolean isHardcoreRulesActiveForServer(MinecraftServer server) {
+		return isHardcoreRulesActive(server);
+	}
+
 	private static boolean isHardcoreRulesActive(MinecraftServer server) {
 		boolean naturalRegen = server.getGameRules().get(GameRules.NATURAL_HEALTH_REGENERATION);
 		boolean keepInventory = server.getGameRules().get(GameRules.KEEP_INVENTORY);

@@ -61,6 +61,17 @@ public record MitePlayerData(
 		);
 	}
 
+	public MitePlayerData withTicksSinceNutritionUpdate(int ticksSinceNutritionUpdate) {
+		return new MitePlayerData(
+			dataVersion,
+			nutritionLevel,
+			miteExhaustion,
+			ticksSinceNutritionUpdate,
+			hardcoreRulesActive,
+			survivalRulesActive
+		);
+	}
+
 	public MitePlayerData withNutritionCheckpoint(float addedExhaustion, float refreshedNutritionLevel) {
 		return new MitePlayerData(
 			dataVersion,

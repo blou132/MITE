@@ -41,17 +41,30 @@ public final class MitePlayerDataStore extends SavedData {
 	}
 
 	private static MitePlayerDataStore fromCodec(Map<UUID, MitePlayerData> players) {
-		return new MitePlayerDataStore(players);
+		Map<UUID, MitePlayerData> migrated = new HashMap<>();
+		for (Map.Entry<UUID, MitePlayerData> entry : players.entrySet()) {
+			migrated.put(entry.getKey(), MitePlayerDataMigration.migrateToCurrent(entry.getValue()));
+		}
+		return new MitePlayerDataStore(migrated);
 	}
 
 	private Map<UUID, MitePlayerData> playersForCodec() {
 		return players;
 	}
 
+	static Codec<MitePlayerDataStore> codec() {
+		return CODEC;
+	}
+
 	public MitePlayerData getOrCreate(UUID playerId, Supplier<MitePlayerData> defaultFactory) {
 		MitePlayerData existing = players.get(playerId);
 		if (existing != null) {
-			return existing;
+			MitePlayerData migrated = MitePlayerDataMigration.migrateToCurrent(existing);
+			if (!migrated.equals(existing)) {
+				players.put(playerId, migrated);
+				setDirty();
+			}
+			return migrated;
 		}
 
 		MitePlayerData created = defaultFactory.get();
@@ -65,8 +78,9 @@ public final class MitePlayerDataStore extends SavedData {
 	}
 
 	public void put(UUID playerId, MitePlayerData data) {
-		MitePlayerData previous = players.put(playerId, data);
-		if (!data.equals(previous)) {
+		MitePlayerData migrated = MitePlayerDataMigration.migrateToCurrent(data);
+		MitePlayerData previous = players.put(playerId, migrated);
+		if (!migrated.equals(previous)) {
 			setDirty();
 		}
 	}
